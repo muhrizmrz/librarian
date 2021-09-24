@@ -1,0 +1,22 @@
+{{>main_header}}
+
+<body>
+    <div class="w-full flex h-screen items text-center">
+        <div class="lg:w-1/3 w-full p-3 mx-auto my-auto">
+            <p class="text-gray-700 font-bold text-4xl">Librarian</p>
+            <div class="w-full border-2 p-4 py-8 pt-10 mt-12 mb-12">
+                <p class="text-gray-400 font-bold text-2xl">Login Library</p>
+                <form class="mt-8 p-2 space-y-4 grid grid-cols-1" action="/login" method="POST">
+                    <input type="email" name="email" class="roudned border bg-gray-200 text-gray-500 p-2 focus:outline-none w-full" placeholder="Email">
+                    <input type="password" name="password" class="roudned border bg-gray-200 text-gray-500 p-2 focus:outline-none w-full" placeholder="Password">
+                    {{#if logError}}
+                        <p class="text-left text-red-500">Username or Password is Incorrect</p>
+                    {{/if}}
+                    <button type="submit" class="p-2 rounded-lg bg-purple-900 text-white w-1/4 hover:bg-purple-700 justify-self-end">Login</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>

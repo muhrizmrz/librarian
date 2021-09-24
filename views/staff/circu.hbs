@@ -1,0 +1,40 @@
+{{>main_header}}
+{{>staff_header}}
+
+<div class="flex text-gray-400 ml-20 mt-6">
+    <a href="/staff" class="px-2">Home</a>
+</div>
+
+<div class="w-3/4 mx-auto mt-12 grid grid-cols-1 gap-2">
+    <div class="p-3 grid grid-cols-2 gap-2">
+        <button class="p-3 bg-purple-600 text-white" id="checkout">Checkout</button>
+        <button class="p-3 bg-gray-600 text-white" id="checkin">Check In</button>
+    </div>
+    <form action="/staff/checkout" class="grid lg:grid-cols-2 grid-cols-1 gap-3" id="checkoutForm" method="POST"> 
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="book-name-input" class="font-bold text-lg text-gray-500">Card Number</label>
+                <input type="text" id="patron-name-input" name="card_number" placeholder="Card Number" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="author-input" class="font-bold text-lg text-gray-500">Barcode</label>
+                <input type="text" id="cardNum-input" name="barcode" placeholder="Barcode" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <button type="submit" class="p-2 rounded-lg bg-purple-900 text-white w-1/4 hover:bg-purple-700 justify-self-end col-span-2 mt-3">Checkout</button>
+    </form>
+
+    <form action="/staff/checkIn" class="grid lg:grid-cols-1 grid-cols-1 gap-3" id="checkinForm" method="POST"> 
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="author-input" class="font-bold text-lg text-gray-500">Barcode</label>
+                <input type="text" id="cardNum-input" name="barcode" placeholder="Barcode" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <button type="submit" class="p-2 rounded-lg bg-purple-900 text-white w-1/4 hover:bg-purple-700 justify-self-end col-span-2 mt-3">Check In</button>
+    </form>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="static/js/staff.js"></script>
+</body>
+
+</html>

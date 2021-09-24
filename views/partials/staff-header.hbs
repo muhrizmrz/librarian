@@ -1,0 +1,24 @@
+<body>
+    <header class="">
+        <nav class="w-100 border-b flex p-3 justify-between ">
+            <a href="#" class="pl-6 text-2xl text-blue-400 my-auto">
+                Librarian Staff
+            </a>
+                <button class="p-1 px-4 rounded-full bg-purple-500 text-white mr-3">{{library_name}}</button>
+            <div class="lg:flex w-3/4 text-right hidden">
+                <div class="relative mx-5" id="dropDownDiv">
+                    <button id="userDropdown"
+                        class="border p-2 inline-flex items-center rounded bg-purple-500 text-white"><img class="w-6 h-5 mr-1" src="assets/icons8-user-male-30.png"/> <span class="capitalize">{{user}}</span><svg
+                            class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg></button>
+                    <ul class="absolute right-0 hidden w-full" id="logoutDropdown">
+                        <a href="/staff/logout"><button class="bg-red-500 rounded text-white p-2 w-full">Log
+                                Out</button></a>
+                    </ul>
+                </div>
+
+            </div>
+
+        </nav>
+    </header>

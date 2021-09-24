@@ -1,0 +1,49 @@
+{{>main_header}}
+{{>staff_header}}
+<div class="flex text-gray-400 ml-20 mt-6">
+    <a href="/staff" class="px-2">Home</a>
+</div>
+
+<div class="w-3/4 grid grid-cols-1 mx-auto lg:mt-12 mb-10 border-2 border-gray-200 p-8">
+    <div class="grid grid-cols-1 space-y-6">
+        <p class="text-gray-400 text-3xl font-bold text-center border-b pb-2">Add book</p>
+        {{#if error}}
+        <p class="text-red-400 font-bold text-lg mb-8">Barcode must be Unique</p>
+        {{/if}}
+        <form action="/staff/add-book" class="grid lg:grid-cols-2 grid-cols-1 gap-3" method="POST"> 
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="book-name-input" class="font-bold text-lg text-gray-500">Name</label>
+                <input type="text" id="book-name-input" name="book_name" placeholder="Name" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="author-input" class="font-bold text-lg text-gray-500">Author</label>
+                <input type="text" id="author-input" name="author" placeholder="Author" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="book-name-input" class="font-bold text-lg text-gray-500">Call Number</label>
+                <input type="text" id="book-name-input" name="call_number" placeholder="Call Number" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="book-name-input" class="font-bold text-lg text-gray-500">Barcode</label>
+                <input type="text" id="book-name-input" name="barcode" placeholder="Barcode" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="" class="font-bold text-lg text-gray-500">Item Type</label>
+                <select name="item_type" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+                    <option value="reference">Reference</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-1 space-y-2">
+                <label for="" class="font-bold text-lg text-gray-500">Collections</label>
+                <select name="collection" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+                    <option value="arabic">Arabic</option>
+                    <option value="english">English</option>
+                    <option value="malayalam">Malayalam</option>
+                    <option value="urdu">Urdu</option>
+                </select>
+            </div>
+            <button type="submit" class="p-2 rounded-lg bg-purple-900 text-white w-1/4 hover:bg-purple-700 justify-self-end col-span-2 mt-3">Save</button>
+        </form>
+    </div>
+</div>

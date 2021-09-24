@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/styles/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/styles/animateCss/animate.min.css"/>
+    <title>Librarian</title>
+</head>
+
+<body>
+    <header>
+        <nav class="fixed container shadow-md">
+            <div class="flex justify-between p-3 lg:pl-10 bg-white">
+                <a href="#" class="pl-6 text-2xl text-blue-400 my-auto">
+                    <!--<img class="w-10 h-15" src="https://image.flaticon.com/icons/png/512/2702/2702069.png">-->
+                    Librarian
+                </a>
+                <div class="lg:flex text-lg  text-gray-500 my-auto hidden">
+                    <a href="/" class="mt-4 lg:mt-0 mr-10 block lg:inline-block hover:text-gray-700">
+                        Home
+                    </a>
+                    <a href="#" class="mt-4 lg:mt-0 mr-10 block lg:inline-block hover:text-gray-700">
+                        Opac
+                    </a>
+                    <a href="/staff" class="mt-4 lg:mt-0 mr-10 block lg:inline-block hover:text-gray-700">
+                        Staff
+                    </a>
+                    <a href="#" class="mt-4 lg:mt-0 mr-10 block lg:inline-block hover:text-gray-700">
+                        Events
+                    </a>
+                    {{#if loggedLibrary}}
+                         <button class="p-1 px-4 rounded-full bg-purple-500 text-white">{{library_name}}</button>
+                         <a href="/logout"><button class="p-1 px-4 rounded-full bg-purple-500 text-white">Logout Library</button></a>
+                    {{else}}
+                    <a href="/login">
+                        <button class="p-1 px-4 rounded-full bg-purple-500 text-white">Login Library</button>
+                    </a>
+                    {{/if}}
+                </div>
+            </div>
+        </nav>
+
+        {{#unless loggedLibrary}}
+        <div class="container w-full items-center mx-auto lg:flex p-14 pl-20">
+            <div class="w-full lg:w-1/2 p-3 lg:pl-24 font-sans">
+                <h3 class="text-lg text-2xl text-grey-400" style="font-family: 'Open Sans', sans-serif;">Reading Makes
+                    You Perfect</h3>
+                <h2 class="text-lg text-5xl mt-3 mb-4 text-blue-700" style="font-family: Arial, Helvetica, sans-serif;">10000+ Ebooks</h2>
+                <a href="/create-library"><button class="text-nd text-white p-3 rounded-md bg-purple-500 shadow-md hover:shadow-2xl hover:bg-purple-700">Create Library</button></a>
+            </div>
+            <img class="w-full lg:w-1/2" src="assets/6615.jpg">
+        </div>
+        {{/unless}}
+
+    </header>
+
