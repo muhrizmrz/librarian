@@ -1,0 +1,64 @@
+{{>main_header}}
+{{>staff_header}}
+<div class="flex text-gray-400 ml-20 mt-6">
+    <a href="/staff" class="px-2">Home</a>
+    <a href="/staff/reports" class="px-2 border-l">Reports</a>
+</div>
+<div class="w-3/4 grid grid-cols-1 gap-3 mx-auto p-4 lg:mt-7">
+    <p class="text-4xl font-bold text-gray-500 capitalize">Catalogue Reports</p>
+    <table class="table-fixed mt-8">
+        {{#if catalogueCatagory}}
+        <thead class="border-b-2 border-purple-500 text-lg text-white"> 
+            <tr>
+                <th class="p-2 bg-purple-500">Name</th>
+                <th class="p-2 bg-purple-500">Author</th>
+                <th class="p-2 bg-purple-500">Call Number</th>
+                <th class="p-2 bg-purple-500">Item type</th>
+                <th class="p-2 bg-purple-500">Collection</th>
+                <th class="p-2 bg-purple-500">Barcode</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-700">
+            
+            {{#each reportData}}
+            <tr>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this.book_name}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this.author}}</td>
+                <td class="p-1 border-grey-200 text-center border-2">{{this.call_number}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this.item_type}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this.collection}}</td>
+                <td class="p-1 border-grey-200 text-center border-2">{{this.barcode}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+        {{/if}}
+
+        {{#if patronCatagory}}
+        <thead class="border-b-2 border-purple-500 text-lg text-white"> 
+            <tr>
+                <th class="p-2 bg-purple-500">Name</th>
+                <th class="p-2 bg-purple-500">Card Number</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-700">
+            
+            {{#each reportData}}
+            <tr>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this.patron_name}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this.cardNumber}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+        {{/if}}
+    </table>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="static/js/staff.js"></script>
+</body>
+
+</html>

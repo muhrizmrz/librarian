@@ -24,8 +24,8 @@ admin.get('/create-library',(req,res)=>{
 admin.post('/create-library',(req,res)=>{
     libraryHelper.createLibrary(req.body).then((result)=>{
         console.log(result.insertedId)
-        req.session.library_id = objectId(result.insertedId)
-        //req.session.library._id = objectId(result.insertedId)
+        req.session.library_id = result.insertedId.toString()
+        req.session.library = req.body.library_name
         req.session.loggedLibrary = true
         res.redirect('/')
     })
