@@ -45,5 +45,52 @@ module.exports={
                 resolve({status:false})
             }
         })
+    },
+    viewPatron:(cardNumber,library_id)=>{
+        return new Promise(async(resolve,reject)=>{
+            let searchPatron = await db.get().collection(collection.PATRON_COLLECTION).findOne({
+                $and: [
+                    {library:ObjectId(library_id)},
+                    {cardNumber: parseInt(cardNumber,10)}
+                ]
+            })
+            if(searchPatron){
+                let searchPatronCirculationDetails = await db.get().collection(collection.CIRCULATION_COLLECTION).aggregate([
+                    {
+                        $match: {patronId:searchPatron._id}
+                    },
+                    {
+                        $unwind:  '$checkoutItem'
+                    },
+                    {
+                        $lookup:{
+                            from:'catalogue',
+                            localField: 'checkoutItem.bookId',
+                            foreignField: '_id',
+                            as: 'checkoutItemsDetails'
+                        }
+                    },{
+                        $unwind: '$checkoutItemsDetails'
+                    },{
+                        $group: {
+                            _id:{
+                                date:'$checkoutItem.date', 
+                                book_name:'$checkoutItemsDetails.book_name',
+                                author:'$checkoutItemsDetails.author',
+                                call_number:'$checkoutItemsDetails.call_number'
+                            }
+                        }
+                    }
+                ]).toArray()
+                console.log(searchPatronCirculationDetails)
+                if(searchPatronCirculationDetails){
+                    resolve({patronDetails:searchPatron,checkoutItems:searchPatronCirculationDetails})
+                } else {
+                    resolve("No checkouts")
+                }
+            }else{
+                resolve("This patron is not available")
+            }
+        })
     }
 }

@@ -41,9 +41,19 @@ const verifyLibrary = (req,res,next)=>{
     }
 }
 
+// LIBRARY NAME AND USERNAME
+function library_n_username(req,res){
+    var library_n_usernameVar = {
+        user:req.session.user,
+        library_name:req.session.library
+    }
+    return library_n_usernameVar
+}
+
 // GET STAFF HOME
 staffRouter.get('/',verifyLibrary,verifyLogin,(req,res)=>{
-            res.render('staff/home',{user:req.session.user,title:"Staff - Librarian",library_name:req.session.library})
+    var libraryAndUserDetails = library_n_username(req,res)
+    res.render('staff/home',{user:req.session.user,title:"Staff - Librarian",library_n_username:libraryAndUserDetails,})
 })
 
 // GET STAFF LOGIN
@@ -81,7 +91,8 @@ staffRouter.get('/logout',(req,res)=>{
 
 //  GET CATALOGUE PAGE
 staffRouter.get('/catalogue',verifyLibrary,verifyLogin,(req,res)=>{
-    res.render('staff/add-book',{title:'Add book - Librarian',user:req.session.user,library_name:req.session.library})
+    var libraryAndUserDetails = library_n_username(req,res)
+    res.render('staff/add-book',{title:'Add book - Librarian',library_n_username:libraryAndUserDetails,library_n_username:libraryAndUserDetails,})
 })
 
 // GET AJAX CHECK DUPLICATE BARCODE
@@ -102,12 +113,14 @@ staffRouter.post('/add-book',verifyLibrary,verifyLogin,(req,res)=>{
 
 // GET ADDED BOOK PAGE
 staffRouter.get('/added-book',verifyLibrary,verifyLogin,(req,res)=>{
-    res.render('staff/view-added-book',{added_book:added_book,title:'Added book - Librarian',user:req.session.user,library_name:req.session.library})
+    var libraryAndUserDetails = library_n_username(req,res)
+    res.render('staff/view-added-book',{added_book:added_book,title:'Added book - Librarian',library_n_username:libraryAndUserDetails,library_n_username:libraryAndUserDetails,})
 })
 
 // GET ADD PATRON PAGE
 staffRouter.get('/patrons',verifyLibrary,verifyLogin,(req,res)=>{
-    res.render('staff/patrons',{title:'Patrons - Librarian',user:req.session.user,library_name:req.session.library})
+    var libraryAndUserDetails = library_n_username(req,res)
+    res.render('staff/patrons',{title:'Patrons - Librarian',library_n_username:libraryAndUserDetails,library_n_username:libraryAndUserDetails,})
 })
 
 // POST ADD PATRON
@@ -132,31 +145,54 @@ staffRouter.post('/patrons/check-duplicate-patron',(req,res)=>{
 })
 // GET CIRCULATION PAGE
 staffRouter.get('/circulation',verifyLibrary,verifyLogin,(req,res)=>{
-    res.render('staff/circu',{title:'Circulation - Librarian',user:req.session.user,library_name:req.session.library})
+    var libraryAndUserDetails = library_n_username(req,res)
+    res.render('staff/circu',{title:'Circulation - Librarian',library_n_username:libraryAndUserDetails,})
 })
 
 // POST CHECKOUT BOOK
+var cardNumber; // FOR VIEW PATRON AFTER CIRCULATION AND OTHER TIME
 staffRouter.post('/checkout',verifyLibrary,verifyLogin,(req,res)=>{
     circulationHelpers.checkout(req.session.library_id,req.body).then((result)=>{
-        res.send(result)
+        cardNumber = req.body.card_number
+        res.redirect('/staff/patrons/'+cardNumber)
     })
 })
 
+
+// GET REPORTS
 staffRouter.get('/reports',verifyLibrary,verifyLogin,(req,res)=>{
-    res.render('staff/reports',{title:'Reports - Librarian',user:req.session.user,library_name:req.session.library})
+    var libraryAndUserDetails = library_n_username(req,res)
+    res.render('staff/reports',{title:'Reports - Librarian',library_n_username:libraryAndUserDetails,})
 })
 
+// GET REPORTS CATAGORY
 staffRouter.get('/reports/:catagory',verifyLibrary,verifyLogin,(req,res)=>{
+    var libraryAndUserDetails = library_n_username(req,res)
     catalogueHelpers.catalogueReports(req.session.library_id,req.params.catagory).then((result)=>{
         if(req.params.catagory == PATRON_COLLECTION){
-            res.render('staff/view-reports',{reportData:result,patronCatagory:true,title:'Catalogue Reports - Librarian',user:req.session.user,library_name:req.session.library})
+            res.render('staff/view-reports',{reportData:result,patronCatagory:true,title:'Catalogue Reports - Librarian',library_n_username:libraryAndUserDetails,})
         }else if(req.params.catagory == CATALOGUE){
-            res.render('staff/view-reports',{reportData:result,catalogueCatagory:true,title:'Catalogue Reports - Librarian',user:req.session.user,library_name:req.session.library})
+            res.render('staff/view-reports',{reportData:result,catalogueCatagory:true,title:'Catalogue Reports - Librarian',library_n_username:libraryAndUserDetails,})
         }else if(req.params.catagory == CIRCULATION_COLLECTION){
-            res.render('staff/view-reports',{reportData:result,circulationCatagory:true,title:'Catalogue Reports - Librarian',user:req.session.user,library_name:req.session.library})
+            res.render('staff/view-reports',{reportData:result,circulationCatagory:true,title:'Catalogue Reports - Librarian',library_n_username:libraryAndUserDetails,})
         }
         
     })
 })
+
+/*staffRouter.get('/patrons/'+cardNumber,verifyLibrary,verifyLogin,(req,res)=>{
+    patronHelpers.viewPatron(req.params.cardNumber,req.session.library_id).then((result)=>{
+        var libraryAndUserDetails = library_n_username(req,res)
+        res.render('staff/view-patron',{patronDetail:result.patronDetails,checkoutItems:result.checkoutItems,library_n_username:libraryAndUserDetails})
+    })
+})*/
+
+staffRouter.get('/patrons/:cardNumber',verifyLibrary,verifyLogin,(req,res)=>{
+    patronHelpers.viewPatron(req.params.cardNumber,req.session.library_id).then((result)=>{
+        var libraryAndUserDetails = library_n_username(req,res)
+        res.render('staff/view-patron',{patronDetail:result.patronDetails,checkoutItems:result.checkoutItems,library_n_username:libraryAndUserDetails})
+    })
+})
+
 
 module.exports = staffRouter
