@@ -5,9 +5,10 @@
     <a href="/staff/reports" class="px-2 border-l">Reports</a>
 </div>
 <div class="w-3/4 grid grid-cols-1 gap-3 mx-auto p-4 lg:mt-7">
+    
+    {{#if catalogueCatagory}}
     <p class="text-4xl font-bold text-gray-500 capitalize">Catalogue Reports</p>
-    <table class="table-fixed mt-8">
-        {{#if catalogueCatagory}}
+    <table class="table-fixed mt-8"> 
         <thead class="border-b-2 border-purple-500 text-lg text-white"> 
             <tr>
                 <th class="p-2 bg-purple-500">Name</th>
@@ -31,9 +32,12 @@
             </tr>
             {{/each}}
         </tbody>
-        {{/if}}
+    </table>
+    {{/if}}
 
-        {{#if patronCatagory}}
+    {{#if patronCatagory}}
+    <p class="text-4xl font-bold text-gray-500 capitalize">Patron Reports</p>
+    <table>
         <thead class="border-b-2 border-purple-500 text-lg text-white"> 
             <tr>
                 <th class="p-2 bg-purple-500">Name</th>
@@ -49,8 +53,35 @@
             </tr>
             {{/each}}
         </tbody>
-        {{/if}}
     </table>
+    {{/if}}
+
+    {{#if circulationCatagory}}
+    <p class="text-4xl font-bold text-gray-500 capitalize">Circulation Reports</p>
+    <table>
+        <thead class="border-b-2 border-purple-500 text-lg text-white"> 
+            <tr>
+                <th class="p-2 bg-purple-500">Card Number</th>
+                <th class="p-2 bg-purple-500">Name</th>
+                <th class="p-2 bg-purple-500">Checkedout On</th>
+                <th class="p-2 bg-purple-500">Barcode</th>
+                <th class="p-2 bg-purple-500">Book Name</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-700">
+            
+            {{#each reportData}}
+            <tr>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this._id.cardNumber}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this._id.patronName}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this._id.checkoutOn}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this._id.barcode}}</td>
+                <td class="p-1 border-grey-200 text-center border-2 capitalize">{{this._id.bookName}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
 </div>
 
 

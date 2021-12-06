@@ -3,7 +3,25 @@ const bcrypt = require('bcrypt')
 const collection = require('../config/collection')
 const objectID = require('mongodb').ObjectId
 const { resolve, reject } = require('promise')
-
+var barcodeCheckoutStatus = true
+var date = new Date()
+function updateBarcodeCheckoutStatus(library, barcode, barcodeCheckoutStatus) { // UPDATE CHECKOUT STATUS OF BARCODE TRUE FUNCTION
+    return new Promise((resolve,reject)=>{
+        db.get().collection(collection.CATALOGUE)
+        .updateOne({
+            $and: [
+                { library: objectID(library) },
+                { barcode: parseInt(barcode) }
+            ]
+        }, {
+            $set: {
+                "checkoutStatus": barcodeCheckoutStatus
+            }
+        }).then((result)=>{
+            resolve(result)
+        })
+    })
+}
 module.exports = {
 
     checkout: (library_id, checkoutDetails) => {
@@ -30,24 +48,13 @@ module.exports = {
                     if (barcode.checkoutStatus == true) { // IF BARCODE CHECKEDOUT TO ANOTHER PATRON
                         resolve("barcode checkedout to another patron")
                     } else { // IF NOT CHECKOUT BARCODE
-                        function updateBarcodeCheckoutStatus() { // UPDATE CHECKOUT STATUS OF BARCODE TRUE FUNCTION
-                            db.get().collection(collection.CATALOGUE)
-                                .updateOne({
-                                    $and: [
-                                        { library: objectID(library_id) },
-                                        { barcode: checkoutDetails.barcode }
-                                    ]
-                                }, {
-                                    $set: {
-                                        "checkoutStatus": true
-                                    }
-                                })
-                        }
+
                         // CHECKING PATRON HAS CHECKOUTS
                         let hasCheckout = await db.get().collection(collection.CIRCULATION_COLLECTION).findOne({ patronId: patron._id })
                         var checkedOutdate = new Date()
                         if (hasCheckout) { // IF PATRON HAS CHECKOUTS
-                            updateBarcodeCheckoutStatus() 
+                            barcodeCheckoutStatus = true
+                            updateBarcodeCheckoutStatus(library_id, checkoutDetails.barcode, barcodeCheckoutStatus)
                             let newCheckout = { // DATA TO BO PUSHED TO CHECKOUTS
                                 bookId: barcode._id,
                                 date: checkedOutdate.toLocaleDateString(),
@@ -59,10 +66,11 @@ module.exports = {
                                         checkoutItem: newCheckout
                                     }
                                 }).then((result) => {
-                                    console.log("new added")
+                                    resolve(result)
                                 })
                         } else { // IF PATRON HAS NO CHECKOUTS
-                            updateBarcodeCheckoutStatus()
+                            barcodeCheckoutStatus = true
+                            updateBarcodeCheckoutStatus(library_id, checkoutDetails.barcode, barcodeCheckoutStatus)
                             let newCheckoutWithNewPatron = { // DATA TO ADDED TO CIRCULATION
                                 library: objectID(library_id),
                                 patronId: patron._id,
@@ -74,99 +82,97 @@ module.exports = {
                             }
                             // ADD CHECKOUT DATA
                             db.get().collection(collection.CIRCULATION_COLLECTION).insertOne(newCheckoutWithNewPatron).then((result) => {
-                                console.log(result)
+                                resolve(result)
                             })
                         }
                     }
 
                 } else { // IF BARCODE IS NOT AVAILABLE
                     resolve("This is barcode is not available")
-                } 
+                }
 
             } else { // IF PATRON IS NOT AVAILBLE
                 resolve("This patron is not available")
             }
-            /*
-                        //Checking Library
-                        let libraryCatalogue = await db.get().collection(collection.PATRON_COLLECTION).findOne({ library: library_id })
-                        if (libraryCatalogue) {
-            
-                            //Checking Patron
-                            var patron = await libraryCatalogue.patrons.findIndex(patron => patron.cardNumber == checkoutDetails.card_number)
-                            if (patron != -1) {
-                                //access Patron Id
-                                var CardDetails = await db.get().collection(collection.PATRON_COLLECTION).aggregate([
-                                    {
-                                        "$match": {
-                                            "library": library_id
-                                        }
-                                    },
-                                    { "$unwind": "$patrons" },
-                                    { "$match": { "patrons.cardNumber": checkoutDetails.card_number } }
-            
-                                ]).toArray()
-            
-                                //Checking Barcode
-                                let catalogueCollection = await db.get().collection(collection.CATALOGUE).findOne({ library: library_id })
-                                let barcode = catalogueCollection.books.findIndex(book => book.barcode == checkoutDetails.barcode)
-                                if (barcode != -1) {
-                                    //Access Barcode data
-                                    var barcodeDetails = await db.get().collection(collection.CATALOGUE).aggregate([
-                                        { "$match": { "library": library_id } },
-                                        { "$unwind": "$books" },
-                                        { "$match": { "books.barcode": checkoutDetails.barcode } }
-                                    ]).toArray()
-            
-                                    //if barcode checkout
-                                    //var circulationCollection = await db.get().collection(collection.CIRCULATION_COLLECTION).findOne({chec})
-                                    var barcodeHasCheckout = await db.get().collection(collection.CIRCULATION_COLLECTION).aggregate([
-                                        { "$match": { "library": library_id } },
-                                        { "$unwind": "$chekoutItems" },
-                                        { "$match": { "chekoutItems.bookId": barcodeDetails[0].books._id} }
-                                    ]).toArray()
-                                    console.log(barcodeHasCheckout)
-                                    //let ifBarcodeCheckedOut = circulationCollection.findIndex(checkout => checkout.bookId == barcodeDetails[0].books._id)
-                                    //if patron has checkout
-                                    let ifPatronHasCheckout = await db.get().collection(collection.CIRCULATION_COLLECTION).findOne({ patronId: objectID(CardDetails[0].patrons._id) })
-                                    if (ifPatronHasCheckout) {
-                                            var checkoutItem = {
-                                                bookId: barcodeDetails[0].books._id,
-                                                    status: true
-                                            } 
-                                            db.get().collection(collection.CIRCULATION_COLLECTION)
-                                                .updateOne({patronId: CardDetails[0].patrons._id },
-                                                    {
-                                                        $push: {
-                                                            chekoutItems: checkoutItem 
-                                                        }
-                                                    }).then((result) => {
-                                                        resolve(result)
-                                                    })
-                                    } else { //if not Circulation Collection
-                                        var checkoutObj = {
-                                            library: library_id,
-                                            patronId: CardDetails[0].patrons._id,
-                                            chekoutItems: [{
-                                                bookId: barcodeDetails[0].books._id,
-                                                status: true
-                                            }]
-            
-                                        }
-                                        db.get().collection(collection.CIRCULATION_COLLECTION).insertOne(checkoutObj).then((checkout) => {
-                                            resolve(checkout)
-                                        })
-                                    }
-            
-            
-                                } else { //if Barcode was not Found
-                                    resolve("book not")
-                                }
-                            } else { //if Patron was not found
-                                resolve("card not found")
-                            }
-            
-                        }//if Patron Collection was not Available*/
-
+        })
+    },
+    checkInBook: (barcode, libraryId) => {
+        return new Promise(async(resolve, reject) => {
+            barcodeCheckoutStatus = false
+           // console.log(libraryId)
+           
+            var barcodeBook =  await db.get().collection(collection.CATALOGUE).findOne({
+                $and: [
+                    {library: objectID(libraryId)},
+                    {barcode: parseInt(barcode)}
+                ]
+            })
+            db.get().collection(collection.CIRCULATION_COLLECTION).updateOne({
+                $and: [
+                    {library: objectID(libraryId)},
+                    {'checkoutItem.bookId': barcodeBook._id},
+                    {'checkoutItem.checkoutStatus':true}
+                ]
+            },{
+                $set:{
+                    'checkoutItem.$.checkoutStatus' : false,
+                    'checkoutItem.$.checkInDate': date.toLocaleDateString()
+                }
+            })
+             updateBarcodeCheckoutStatus(libraryId, barcode, barcodeCheckoutStatus).then((result)=>{
+                resolve(result)
+            })
+        })
+    },
+    viewCheckIn:(barcode,libraryId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let getBook = await db.get().collection(collection.CATALOGUE).findOne({
+                $and: [
+                    {library:objectID(libraryId)},
+                    {barcode: parseInt(barcode)}
+                ]
+            })
+            let getCheckoutDetails = await db.get().collection(collection.CIRCULATION_COLLECTION).aggregate([
+                {
+                    $match: {library:objectID(libraryId)}
+                },
+                {
+                    $unwind: '$checkoutItem'
+                },{
+                    $match: {
+                        'checkoutItem.bookId':objectID(getBook._id),
+                        'checkoutItem.checkoutStatus':true
+                    }
+                },{
+                    $lookup: {
+                        from: collection.PATRON_COLLECTION,
+                        localField: 'patronId',
+                        foreignField: '_id',
+                        as: 'patronDetails'
+                    }
+                },{
+                    $lookup: {
+                        from: collection.CATALOGUE,
+                        localField: 'checkoutItem.bookId',
+                        foreignField: '_id',
+                        as: 'bookDetails' 
+                    }
+                },{
+                    $unwind: '$patronDetails'
+                },{
+                    $unwind: '$bookDetails'
+                },{
+                    $project: {
+                        'checkoutItem.date':1,
+                        'patronDetails.patron_name': 1,
+                        'patronDetails.cardNumber':1,
+                        'bookDetails.book_name':1,
+                        'bookDetails.author':1,
+                        'bookDetails.barcode':1
+                    }
+                }
+            ]).toArray()
+            resolve(getCheckoutDetails)
         })
     }
 

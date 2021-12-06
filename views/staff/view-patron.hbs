@@ -5,7 +5,16 @@
     <a href="/staff/patrons" class="px-2 border-l">Patrons</a>
 </div>
 <div class="w-3/4 grid grid-cols-1 gap-3 mx-auto p-4 lg:mt-7">
-    <p class="text-4xl font-bold text-gray-500 capitalize">{{patronDetail.patron_name}} ({{patronDetail.cardNumber}})</p>
+    <p class="text-4xl font-bold mb-3 text-gray-500 capitalize">{{patronDetail.patron_name}} ({{patronDetail.cardNumber}})</p>
+    <form action="/staff/checkout" class="grid lg:grid-cols-2 grid-cols-1 gap-3" id="checkoutForm" method="POST"> 
+            <div class="hidden">
+                <input type="text" id="patron-name-input" name="card_number" value="{{patronDetail.cardNumber}}" placeholder="Card Number" class="hidden text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <div class="grid grid-cols-1 space-y-2">
+                <input type="text" id="cardNum-input" name="barcode" placeholder="Barcode" class="text-gray-700 p-2 border bg-blue-50 rounded border-gray-300 focus:outline-none focus:bg-blue-100">
+            </div>
+            <button type="submit" class="p-2 grid grid-cols-1 space-y-2 rounded-lg bg-purple-900 text-white w-1/2 hover:bg-purple-700">Checkout</button>
+    </form>
     <table class="table-fixed mt-8">
         
         <thead class="border-b-2 border-purple-500 text-lg text-white"> 
@@ -48,3 +57,5 @@
 </body>
 
 </html>
+
+     

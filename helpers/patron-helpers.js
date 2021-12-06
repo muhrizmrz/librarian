@@ -57,10 +57,17 @@ module.exports={
             if(searchPatron){
                 let searchPatronCirculationDetails = await db.get().collection(collection.CIRCULATION_COLLECTION).aggregate([
                     {
-                        $match: {patronId:searchPatron._id}
+                        $match: {
+                            patronId:searchPatron._id,
+                        }
                     },
                     {
                         $unwind:  '$checkoutItem'
+                    },
+                    {
+                        $match: {
+                            'checkoutItem.checkoutStatus' : true
+                        }
                     },
                     {
                         $lookup:{
@@ -71,18 +78,21 @@ module.exports={
                         }
                     },{
                         $unwind: '$checkoutItemsDetails'
-                    },{
+                    },
+                    {
                         $group: {
                             _id:{
-                                date:'$checkoutItem.date', 
-                                book_name:'$checkoutItemsDetails.book_name',
-                                author:'$checkoutItemsDetails.author',
-                                call_number:'$checkoutItemsDetails.call_number'
+                                date: '$checkoutItem.date',
+                                book_name: '$checkoutItemsDetails.book_name',
+                                barcode: '$checkoutItemsDetails.barcode',
+                                call_number: '$checkoutItemsDetails.call_number',
+                                item_type: '$checkoutItemsDetails.item_type',
+                                author: '$checkoutItemsDetails.author',
+                                collection: '$checkoutItemsDetails.collection'
                             }
                         }
                     }
                 ]).toArray()
-                console.log(searchPatronCirculationDetails)
                 if(searchPatronCirculationDetails){
                     resolve({patronDetails:searchPatron,checkoutItems:searchPatronCirculationDetails})
                 } else {

@@ -9,11 +9,16 @@ $(document).ready(function () {
     /*    //// CIRCULATION //////////////////////// */
 
     $('#checkout').click(function () {
-        console.log("hi")
+        $('#checkinForm').hide()
         $('#checkoutForm').show()
+        $('#checkout').addClass('bg-purple-600').removeClass('bg-gray-600')
+        $('#checkin').addClass('bg-gray-600').removeClass('bg-purple-600')
     })
     $('#checkin').click(function () {
-        $('#checkinForm').hide()
+        $('#checkinForm').show()
+        $('#checkoutForm').hide()
+        $('#checkin').addClass('bg-purple-600').removeClass('bg-gray-600')
+        $('#checkout').addClass('bg-gray-600').removeClass('bg-purple-600')
     })
 
     // AJAX ERROR HANDLING FUNCTION

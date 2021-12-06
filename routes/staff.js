@@ -174,7 +174,7 @@ staffRouter.get('/reports/:catagory',verifyLibrary,verifyLogin,(req,res)=>{
         }else if(req.params.catagory == CATALOGUE){
             res.render('staff/view-reports',{reportData:result,catalogueCatagory:true,title:'Catalogue Reports - Librarian',library_n_username:libraryAndUserDetails,})
         }else if(req.params.catagory == CIRCULATION_COLLECTION){
-            res.render('staff/view-reports',{reportData:result,circulationCatagory:true,title:'Catalogue Reports - Librarian',library_n_username:libraryAndUserDetails,})
+            res.render('staff/view-reports',{reportData:result,circulationCatagory:true,title:'Circulation Reports - Librarian',library_n_username:libraryAndUserDetails,})
         }
         
     })
@@ -190,9 +190,26 @@ staffRouter.get('/reports/:catagory',verifyLibrary,verifyLogin,(req,res)=>{
 staffRouter.get('/patrons/:cardNumber',verifyLibrary,verifyLogin,(req,res)=>{
     patronHelpers.viewPatron(req.params.cardNumber,req.session.library_id).then((result)=>{
         var libraryAndUserDetails = library_n_username(req,res)
-        res.render('staff/view-patron',{patronDetail:result.patronDetails,checkoutItems:result.checkoutItems,library_n_username:libraryAndUserDetails})
+        //console.log(result)
+        res.render('staff/view-patron',{title:'Patron - Librarian',patronDetail:result.patronDetails,checkoutItems:result.checkoutItems,library_n_username:libraryAndUserDetails})
     })
 })
+
+staffRouter.post('/checkin',verifyLibrary,verifyLogin,(req,res)=>{
+    circulationHelpers.viewCheckIn(req.body.barcode,req.session.library_id).then((details)=>{
+        circulationHelpers.checkInBook(req.body.barcode,req.session.library_id).then(()=>{
+            console.log(details)
+            var libraryAndUserDetails = library_n_username(req,res)
+            res.render('staff/circu',{checkInDetails:details,title:'Circulation - Librarian',library_n_username:libraryAndUserDetails})
+        })
+    })
+})
+
+staffRouter.post('/patrons/search',verifyLibrary,verifyLogin,(req,res)=>{
+    cardNumber = req.body.cardNumber
+    res.redirect('/staff/patrons/'+cardNumber)
+})
+
 
 
 module.exports = staffRouter
