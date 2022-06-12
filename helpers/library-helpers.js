@@ -14,7 +14,11 @@ module.exports={
     },
     loginLibrary:(libraryData)=>{
         return new Promise(async(resolve,reject)=>{
-            var status = false
+            /* Library login default for primary@gmail.com for production use */
+            let library =await db.get().collection('library').findOne({email:'primary@gmail.com'})
+            resolve({library:library,status:true,library_id:library._id})
+
+            /*var status = false
             var response = {}
             let library =await db.get().collection('library').findOne({email:libraryData.email})
             if(library){
@@ -30,7 +34,7 @@ module.exports={
             }else{
                 console.log('invalid user')
                 resolve({status:false})
-            }
+            }*/
         })
         
     }

@@ -25,20 +25,25 @@ const credintails = {
 
 // VERIFY STAFF
 const verifyLogin = (req,res,next)=>{
-    if(req.session.userlogged){
+    /*if(req.session.userlogged){   //disable staff login for production
         next()
     }else{
         res.redirect('/staff/login')
-    }
+    }*/
+    next()
 }
 
 // VERIFY LIBRARY
 const verifyLibrary = (req,res,next)=>{
-    if(req.session.loggedLibrary){
+
+     //library login disabled code lines for productin use
+    /*if(req.session.loggedLibrary){
         next()
     }else{
         res.redirect('/login')
-    }
+    }*/
+
+    next()
 }
 
 // LIBRARY NAME AND USERNAME
@@ -52,6 +57,11 @@ function library_n_username(req,res){
 
 // GET STAFF HOME
 staffRouter.get('/',verifyLibrary,verifyLogin,(req,res)=>{
+    libraryHelpers.loginLibrary(req.body).then((response) => {
+        req.session.library = response.library.library_name
+        req.session.library_id = response.library._id.toString()
+        req.session.loggedLibrary = true
+    })
     var libraryAndUserDetails = library_n_username(req,res)
     res.render('staff/home',{user:req.session.user,title:"Staff - Librarian",library_n_username:libraryAndUserDetails,})
 })
@@ -105,6 +115,7 @@ staffRouter.post('/catalogue/check-duplicate-barcode',(req,res)=>{
 
 var added_book // ADDED BOOK DATA
 staffRouter.post('/add-book',verifyLibrary,verifyLogin,(req,res)=>{
+    added_book = req.body
     req.body._id = new ObjectId()
     catalogueHelpers.addBook(req.session.library_id,req.body).then((recordedBook)=>{
             res.redirect('/staff/added-book')    
@@ -114,7 +125,7 @@ staffRouter.post('/add-book',verifyLibrary,verifyLogin,(req,res)=>{
 // GET ADDED BOOK PAGE
 staffRouter.get('/added-book',verifyLibrary,verifyLogin,(req,res)=>{
     var libraryAndUserDetails = library_n_username(req,res)
-    res.render('staff/view-added-book',{added_book:added_book,title:'Added book - Librarian',library_n_username:libraryAndUserDetails,library_n_username:libraryAndUserDetails,})
+    res.render('staff/view-added-book',{added_book:added_book,title:'Added book - Librarian',library_n_username:libraryAndUserDetails,library_n_username:libraryAndUserDetails})
 })
 
 // GET ADD PATRON PAGE
@@ -127,8 +138,9 @@ staffRouter.get('/patrons',verifyLibrary,verifyLogin,(req,res)=>{
 staffRouter.post('/add-patron',verifyLibrary,verifyLogin,(req,res)=>{
     req.body._id = new ObjectId()
     patronHelpers.addPatron(req.body,req.session.library_id).then((newPatron)=>{
-        if(newPatron.status){
-            res.send("This is username is available")
+        if(newPatron.errorStatus){
+            var libraryAndUserDetails = library_n_username(req,res)
+            res.render('staff/patrons',{title:'Patrons - Librarian',library_n_username:libraryAndUserDetails,library_n_username:libraryAndUserDetails,errorMsg:newPatron.errorMsg})
         }else{
              res.redirect('/staff/patrons')
         }
@@ -191,7 +203,12 @@ staffRouter.get('/patrons/:cardNumber',verifyLibrary,verifyLogin,(req,res)=>{
     patronHelpers.viewPatron(req.params.cardNumber,req.session.library_id).then((result)=>{
         var libraryAndUserDetails = library_n_username(req,res)
         //console.log(result)
-        res.render('staff/view-patron',{title:'Patron - Librarian',patronDetail:result.patronDetails,checkoutItems:result.checkoutItems,library_n_username:libraryAndUserDetails})
+        if(result.isCheckouts){
+            res.render('staff/view-patron',{title:'Patron - Librarian',patronDetail:result.patronDetails,checkoutItems:result.checkoutItems,library_n_username:libraryAndUserDetails})
+        } else {
+            console.log('working')
+            res.render('staff/view-patron',{title:'Patron - Librarian',patronDetail:result.patronDetails,msg:result.msg,library_n_username:libraryAndUserDetails})
+        }
     })
 })
 

@@ -8,7 +8,7 @@
 <div class="w-3/4 grid grid-cols-1 mx-auto lg:mt-12 mb-10 border-2 p-8">
     <div class="grid grid-cols-1 space-y-6">
         <p class="text-gray-400 text-3xl font-bold text-center border-b pb-2">Add Patron</p>
-        <p class="text-red-600 font-bold mb-8 hidden" id="duplicate-patron">Card number already in use</p>
+        <p class="text-red-600 font-bold mb-8" id="duplicate-patron">{{errorMsg}}</p>
         <form action="/staff/add-patron" id="add-patron-form" class="grid lg:grid-cols-2 grid-cols-1 gap-3" method="POST"> 
             <div class="grid grid-cols-1 space-y-2">
                 <label for="book-name-input" class="font-bold text-lg text-gray-500">Name</label>
